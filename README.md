@@ -1,5 +1,5 @@
 # PDFCombine
-A utility for automatically combining and trimming PDF files 
+A python 3 utility for automatically combining and trimming PDF files 
 
 # Main Functions
 ## Combine PDFs
@@ -17,3 +17,31 @@ Remove pages using manually defined page ranges, and/or by auto-recognizing the 
 
 ![image](https://github.com/nhansendev/PDFCombine/assets/9289200/a170d398-88d4-4c7c-a5b1-de9716197e9f)
 
+# Requirements:
+  Python 3.11
+
+    pip install -r requirements.txt
+    
+- pdfrw
+- pdfplumber
+
+# Usage
+## Terminal
+    python CombinePDFs.py <directory with PDFs> <new filename> <pages per page> ... (other args shown below)
+
+## In Python
+    from CombinePDFs import combine_pdfs
+
+    # default kwargs shown
+    combine_pdfs(
+        path,
+        new_filename="combined.pdf", 
+        pages_per_page=4,   # can be any integer >= 1
+        subset=None,        # which specific PDFs in the directory should be combined?
+        exclude=None,       # which specific PDFs in the directory should be ignored?
+        page_subsets=None,  # in the same order that the PDFs are found, list their page ranges to use
+        remove_refs=True,   # try to automatically find and remove all pages after the "References" page
+        scaler=0.92,        # sets the spacing between PDFs on the same page
+        verbose=True, 
+    )
+    
