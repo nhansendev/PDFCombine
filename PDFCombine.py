@@ -80,6 +80,14 @@ def combine_pdfs(
     scaler=0.92,
     verbose=True,
 ):
+    try:
+        pages_per_page = int(pages_per_page)
+        if pages_per_page < 1:
+            raise ValueError
+    except ValueError:
+        print("Error: Provided <pages_per_page> value must be an integer > 0")
+        return
+
     if subset is not None and len(subset) == 1:
         new_filename = "summarized_" + subset[0]
 
@@ -167,7 +175,7 @@ def combine_pdfs(
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 0:
+    if len(sys.argv) > 1:
         combine_pdfs(*sys.argv[1:])
     else:
         print(
