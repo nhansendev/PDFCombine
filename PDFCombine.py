@@ -1,4 +1,11 @@
+# Copyright (c) 2023, Nathan Hansen
+# All rights reserved.
+
+# This source code is licensed under the BSD-style license found in the
+# LICENSE file in the root directory of this source tree.
+
 import os
+import sys
 from pdfrw import PdfReader, PdfWriter, PageMerge
 import pdfplumber
 from multiprocessing import Pool
@@ -10,39 +17,29 @@ ENDSTRINGS = ["Referen", "Bibliog", "Acknowl"]
 
 
 def calc_best_packing(t, A=8.5, B=11):
-    R = A / B
-
     options = []
     for n in range(1, t + 1):
         m = math.ceil(t / n)
 
-        # 90 deg, short edge
-        C = B / n
-        D = C / R
-        if D * m <= A:
-            options.append(["1", n, m, C * D, C, D])
+        # 0 deg
+        w1 = n * A
+        h1 = m * B
+        ap1 = w1 * h1 + 2 * w1 + 2 * h1
 
-        # 0 deg, short edge
-        D = B / n
-        C = D * R
-        if C * m <= A:
-            options.append(["2", n, m, C * D, C, D])
+        # 90 deg
+        w2 = n * B
+        h2 = m * A
+        ap2 = w2 * h2 + 2 * w2 + 2 * h2
 
-        # 0 deg, long edge
-        C = A / m
-        D = C / R
-        if D * n <= B:
-            options.append(["3", n, m, C * D, C, D])
+        # The most compact has the smallest area and perimeter
+        if ap1 < ap2:
+            options.append([n, m, ap1])
+        else:
+            options.append([m, n, ap2])
 
-        # 90 deg, long edge
-        D = A / m
-        C = D * R
-        if C * n <= B:
-            options.append(["4", n, m, C * D, C, D])
+    options.sort(key=lambda x: x[-1], reverse=False)
 
-    options.sort(key=lambda x: x[3], reverse=True)
-
-    return options
+    return options[0][:2]
 
 
 def get_ref_page(path, file, verbose=True):
@@ -75,11 +72,11 @@ def get_ref_page(path, file, verbose=True):
 def combine_pdfs(
     path,
     new_filename="combined.pdf",
+    pages_per_page=4,
     subset=None,
     exclude=None,
     page_subsets=None,
     remove_refs=True,
-    pages_per_page=4,
     scaler=0.92,
     verbose=True,
 ):
@@ -127,7 +124,7 @@ def combine_pdfs(
         for index in indexes:
             pages += [temp[index]]
 
-    _, n, m = calc_best_packing(pages_per_page)[0][:3]
+    n, m = calc_best_packing(pages_per_page)
 
     if verbose:
         print(f"\n> Packing parameters: {n} x {m}")
@@ -170,4 +167,9 @@ def combine_pdfs(
 
 
 if __name__ == "__main__":
-    combine_pdfs("D:\\Papers", "combined.pdf", pages_per_page=4, verbose=True)
+    if len(sys.argv) > 0:
+        combine_pdfs(*sys.argv[1:])
+    else:
+        print(
+            "Usage: python CombinePDFs.py <directory with PDFs> <new filename> <pages per page>"
+        )
