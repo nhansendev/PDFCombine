@@ -10,7 +10,7 @@ Stack multiple PDFs together into one large PDF
 ## Combine Pages
 Stack multiple pages (configurable) onto one page to reduce page count and make printing easier
 
-![image](https://github.com/nhansendev/PDFCombine/assets/9289200/942e4f7f-f51d-4f08-b272-54e12345cad4)
+![image](https://github.com/nhansendev/PDFCombine/assets/9289200/4307d9ea-84aa-42ef-b8ca-bc3becfc55ba)
 
 ## Trim PDFs
 Remove pages using manually defined page ranges, and/or by auto-recognizing the References page of scientific papers
